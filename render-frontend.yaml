@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: personal-finance-chatbot-web
+    runtime: python3
+    buildCommand: pip install -r requirements.txt
+    startCommand: python api_server.py
+    plan: free
+    environmentGroup: main
+    scaling:
+      minInstances: 1
+      maxInstances: 1
