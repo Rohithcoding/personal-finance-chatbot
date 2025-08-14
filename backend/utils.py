@@ -81,3 +81,25 @@ class FinanceUtils:
             'has_percentage': bool(re.search(r'\d+(?:\.\d+)?%', text)),
             'has_date': bool(re.search(r'\b\d{1,2}[/-]\d{1,2}[/-]\d{2,4}\b', text)),
         }
+
+# Standalone functions for easier importing
+def extract_amounts(text: str) -> List[float]:
+    """Extract monetary amounts from text"""
+    return FinanceUtils.extract_amounts(text)
+
+def format_currency(amount: float) -> str:
+    """Format amount as currency"""
+    return FinanceUtils.format_currency(amount)
+
+def calculate_compound_interest(principal: float, rate: float, time: float, 
+                              compound_frequency: int = 12) -> float:
+    """Calculate compound interest"""
+    return FinanceUtils.calculate_compound_interest(principal, rate, time, compound_frequency)
+
+def categorize_expense(text: str) -> str:
+    """Categorize expense based on keywords in text"""
+    return FinanceUtils.categorize_expense(text)
+
+def validate_financial_input(text: str) -> Dict[str, bool]:
+    """Validate if text contains financial information"""
+    return FinanceUtils.validate_financial_input(text)

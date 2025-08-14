@@ -158,3 +158,64 @@ docker run -p 8501:8501 \
 ## License
 
 MIT License - see LICENSE file for details.
+
+## 🐍 Python Frontend Collection
+
+This project now includes **multiple Python-based frontends** in addition to the Streamlit interface:
+
+### Available Interfaces:
+
+#### 1. 🖥️ Tkinter Desktop App
+**Professional native desktop application**
+```bash
+python frontend/tkinter_app.py
+```
+- Modern GUI with native OS integration
+- Real-time chat with animations
+- Financial amount highlighting
+- No additional dependencies (uses built-in Tkinter)
+
+#### 2. 🌐 FastAPI Web App  
+**Modern web interface built entirely in Python**
+```bash
+pip install fastapi uvicorn jinja2
+python frontend/fastapi_frontend.py
+# Visit: http://localhost:8000
+```
+- Beautiful responsive web design
+- RESTful API endpoints
+- Production-ready deployment
+- Auto-generated documentation
+
+#### 3. 📱 Kivy Mobile App
+**Mobile-style interface for cross-platform deployment**
+```bash
+pip install kivy
+python frontend/kivy_mobile_app.py
+```
+- Touch-friendly mobile-like UI
+- Cross-platform mobile deployment
+- Message bubbles and smooth scrolling
+- Can be compiled to mobile apps
+
+#### 4. 🎨 Streamlit Interface (Original)
+**Data science focused interface**
+```bash
+streamlit run streamlit_app.py
+```
+- Great for prototyping and demos
+- Built-in widgets and charts
+- Easy deployment on Streamlit Cloud
+
+### Quick Comparison:
+
+| Interface | Best For | Installation | Deployment |
+|-----------|----------|-------------|------------|
+| **Tkinter** | Desktop users | ✅ Built-in | Executable |
+| **FastAPI** | Web deployment | 📦 pip install | Web server |
+| **Kivy** | Mobile apps | 📦 pip install | App stores |
+| **Streamlit** | Prototyping | 📦 pip install | Cloud hosting |
+
+Choose the interface that best fits your needs! All frontends use the same powerful backend with OpenAI and Google Cloud integration.
+
+📚 **Detailed documentation**: See `frontend/README.md` for comprehensive setup and usage instructions.
