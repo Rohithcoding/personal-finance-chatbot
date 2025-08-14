@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Demo - Personal Finance Chatbot</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .demo-page {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding-top: 70px;
+        }
+        
+        .demo-header {
+            text-align: center;
+            color: white;
+            padding: 3rem 0;
+        }
+        
+        .demo-header h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .demo-header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .demo-interface {
+            background: white;
+            margin: 2rem auto;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            max-width: 1000px;
+        }
+        
+        .demo-nav {
+            background: #f8f9ff;
+            display: flex;
+            justify-content: center;
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        
+        .demo-nav-btn {
+            background: white;
+            border: 2px solid #e0e0e0;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            color: #666;
+        }
+        
+        .demo-nav-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: transparent;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .demo-content {
+            padding: 2rem;
+            min-height: 500px;
+        }
+        
+        .demo-section {
+            display: none;
+        }
+        
+        .demo-section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .input-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .input-field {
+            width: 100%;
+            min-height: 120px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 0.9rem;
+            resize: vertical;
+            transition: all 0.3s ease;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .demo-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .demo-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        .demo-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .result-container {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: #f8f9ff;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            display: none;
+        }
+        
+        .result-container.show {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .result-title {
+            color: #333;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .result-content {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            white-space: pre-wrap;
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+        }
+        
+        .error-message {
+            color: #dc3545;
+            background: #f8d7da;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid #dc3545;
+        }
+        
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .back-btn {
+            position: fixed;
+            top: 90px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #667eea;
+            text-decoration: none;
+            padding: 10px 15px;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+        
+        .back-btn:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .sample-data {
+            background: #e3f2fd;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            border-left: 4px solid #2196f3;
+        }
+        
+        .sample-data h4 {
+            margin: 0 0 0.5rem 0;
+            color: #1976d2;
+            font-size: 1rem;
+        }
+        
+        .sample-data pre {
+            margin: 0;
+            font-size: 0.8rem;
+            color: #333;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-online {
+            background: #28a745;
+            box-shadow: 0 0 8px rgba(40, 167, 69, 0.5);
+        }
+        
+        .status-offline {
+            background: #dc3545;
+        }
+        
+        .connection-status {
+            text-align: center;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            border: 2px solid #dee2e6;
+        }
+        
+        .persona-selector {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .persona-option {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .persona-option.selected {
+            border-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+            font-weight: 600;
+        }
+        
+        @media (max-width: 768px) {
+            .demo-header h1 {
+                font-size: 2rem;
+            }
+            
+            .demo-interface {
+                margin: 1rem;
+                border-radius: 15px;
+            }
+            
+            .demo-content {
+                padding: 1rem;
+            }
+            
+            .demo-nav {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .demo-nav-btn {
+                width: 200px;
+                text-align: center;
+            }
+            
+            .persona-selector {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <span class="logo-icon">💰</span>
+                <span class="logo-text">FinanceBot</span>
+            </div>
+            <a href="index.html" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+                Back to Home
+            </a>
+        </div>
+    </nav>
+
+    <div class="demo-page">
+        <div class="demo-header">
+            <div class="container">
+                <h1>🚀 Live Interactive Demo</h1>
+                <p>Experience the power of AI-driven financial guidance. Test all features with real-time responses from our IBM Watson-powered backend.</p>
+            </div>
+        </div>
+
+        <div class="demo-interface">
+            <!-- Connection Status -->
+            <div class="connection-status">
+                <span class="status-indicator status-offline" id="statusIndicator"></span>
+                <span id="connectionStatus">Checking connection to API server...</span>
+            </div>
+
+            <!-- Demo Navigation -->
+            <div class="demo-nav">
+                <button class="demo-nav-btn active" data-section="nlu">🧠 NLU Analysis</button>
+                <button class="demo-nav-btn" data-section="qa">💬 Q&A Assistant</button>
+                <button class="demo-nav-btn" data-section="budget">📊 Budget Summary</button>
+                <button class="demo-nav-btn" data-section="insights">📈 Spending Insights</button>
+            </div>
+
+            <!-- Demo Content -->
+            <div class="demo-content">
+                <!-- NLU Analysis Section -->
+                <div class="demo-section active" id="nlu">
+                    <h3>🧠 Natural Language Understanding</h3>
+                    <p>Analyze the sentiment and extract key topics from your financial text.</p>
+                    
+                    <div class="input-group">
+                        <label class="input-label">Enter your financial question or concern:</label>
+                        <textarea class="input-field" id="nluInput" placeholder='{"text": "I am struggling to save money each month and need help with budgeting"}'>{"text": "I am struggling to save money each month and need help with budgeting"}</textarea>
+                    </div>
+                    
+                    <button class="demo-button" onclick="testNLU()">
+                        <i class="fas fa-brain"></i>
+                        Analyze Text
+                    </button>
+                    
+                    <div class="sample-data">
+                        <h4>📝 Sample Input:</h4>
+                        <pre>{"text": "I'm worried about my spending habits and need help saving money"}</pre>
+                    </div>
+                    
+                    <div class="loading-spinner" id="nluLoading">
+                        <div class="spinner"></div>
+                        <p>Analyzing your text...</p>
+                    </div>
+                    
+                    <div class="result-container" id="nluResult">
+                        <div class="result-title">Analysis Results:</div>
+                        <div class="result-content" id="nluContent"></div>
+                    </div>
+                </div>
+
+                <!-- Q&A Section -->
+                <div class="demo-section" id="qa">
+                    <h3>💬 Intelligent Q&A Assistant</h3>
+                    <p>Get personalized financial advice based on your user type and question.</p>
+                    
+                    <div class="input-group">
+                        <label class="input-label">Select your persona:</label>
+                        <div class="persona-selector">
+                            <div class="persona-option selected" data-persona="student">
+                                🎓 Student
+                            </div>
+                            <div class="persona-option" data-persona="professional">
+                                💼 Professional
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label class="input-label">Your financial question:</label>
+                        <textarea class="input-field" id="qaInput" placeholder='{"question": "How can I save money while paying off student loans?", "persona": "student"}'>{"question": "What percentage of my income should I save each month?", "persona": "student"}</textarea>
+                    </div>
+                    
+                    <button class="demo-button" onclick="testQA()">
+                        <i class="fas fa-comments"></i>
+                        Get AI Advice
+                    </button>
+                    
+                    <div class="sample-data">
+                        <h4>📝 Sample Questions:</h4>
+                        <pre>{"question": "How do I create an emergency fund?", "persona": "professional"}
+{"question": "Best ways to reduce monthly expenses?", "persona": "student"}</pre>
+                    </div>
+                    
+                    <div class="loading-spinner" id="qaLoading">
+                        <div class="spinner"></div>
+                        <p>Generating personalized advice...</p>
+                    </div>
+                    
+                    <div class="result-container" id="qaResult">
+                        <div class="result-title">AI Financial Advice:</div>
+                        <div class="result-content" id="qaContent"></div>
+                    </div>
+                </div>
+
+                <!-- Budget Summary Section -->
+                <div class="demo-section" id="budget">
+                    <h3>📊 Comprehensive Budget Analysis</h3>
+                    <p>Upload your financial data and get detailed budget insights and recommendations.</p>
+                    
+                    <div class="input-group">
+                        <label class="input-label">Your budget data (JSON format):</label>
+                        <textarea class="input-field" id="budgetInput" placeholder="Enter your income, expenses, savings goal...">{
+  "income": 3000,
+  "expenses": {
+    "rent": 1000,
+    "groceries": 400,
+    "utilities": 150,
+    "transportation": 200,
+    "entertainment": 100
+  },
+  "savings_goal": 500,
+  "currency_symbol": "$",
+  "user_type": "student"
+}</textarea>
+                    </div>
+                    
+                    <button class="demo-button" onclick="testBudget()">
+                        <i class="fas fa-chart-pie"></i>
+                        Generate Budget Summary
+                    </button>
+                    
+                    <div class="sample-data">
+                        <h4>📝 Sample Budget Data:</h4>
+                        <pre>{"income": 4500, "expenses": {"rent": 1200, "groceries": 500, "utilities": 200}, "savings_goal": 800, "user_type": "professional"}</pre>
+                    </div>
+                    
+                    <div class="loading-spinner" id="budgetLoading">
+                        <div class="spinner"></div>
+                        <p>Analyzing your budget...</p>
+                    </div>
+                    
+                    <div class="result-container" id="budgetResult">
+                        <div class="result-title">Budget Analysis Report:</div>
+                        <div class="result-content" id="budgetContent"></div>
+                    </div>
+                </div>
+
+                <!-- Spending Insights Section -->
+                <div class="demo-section" id="insights">
+                    <h3>📈 Advanced Spending Insights</h3>
+                    <p>Get comprehensive analysis of your spending patterns with goal tracking and optimization strategies.</p>
+                    
+                    <div class="input-group">
+                        <label class="input-label">Detailed financial data with goals:</label>
+                        <textarea class="input-field" id="insightsInput">{
+  "income": 4000,
+  "expenses": {
+    "rent": 1200,
+    "groceries": 500,
+    "utilities": 200,
+    "transportation": 300,
+    "entertainment": 200,
+    "dining_out": 250,
+    "shopping": 150,
+    "insurance": 100
+  },
+  "savings_goal": 600,
+  "goals": [
+    {
+      "name": "Emergency Fund",
+      "amount": 10000,
+      "deadline_months": 18
+    },
+    {
+      "name": "Vacation",
+      "amount": 3000,
+      "deadline_months": 8
+    }
+  ],
+  "currency_symbol": "$",
+  "user_type": "professional"
+}</textarea>
+                    </div>
+                    
+                    <button class="demo-button" onclick="testInsights()">
+                        <i class="fas fa-chart-line"></i>
+                        Generate Spending Insights
+                    </button>
+                    
+                    <div class="sample-data">
+                        <h4>📝 Advanced Features:</h4>
+                        <pre>• Needs vs Wants Analysis
+• Benchmark Comparisons  
+• Goal Feasibility Assessment
+• Risk Identification
+• Optimization Strategies</pre>
+                    </div>
+                    
+                    <div class="loading-spinner" id="insightsLoading">
+                        <div class="spinner"></div>
+                        <p>Generating comprehensive insights...</p>
+                    </div>
+                    
+                    <div class="result-container" id="insightsResult">
+                        <div class="result-title">Comprehensive Financial Analysis:</div>
+                        <div class="result-content" id="insightsContent"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://127.0.0.1:8000';
+        let selectedPersona = 'student';
+
+        // Check API connection status
+        async function checkAPIConnection() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/health`);
+                if (response.ok) {
+                    document.getElementById('statusIndicator').className = 'status-indicator status-online';
+                    document.getElementById('connectionStatus').textContent = 'Connected to API server - Ready to test!';
+                } else {
+                    throw new Error('API not responding');
+                }
+            } catch (error) {
+                document.getElementById('statusIndicator').className = 'status-indicator status-offline';
+                document.getElementById('connectionStatus').textContent = 'API server offline - Please start the FastAPI backend first';
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAPIConnection();
+            
+            // Demo navigation
+            const navBtns = document.querySelectorAll('.demo-nav-btn');
+            const sections = document.querySelectorAll('.demo-section');
+            
+            navBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const targetSection = this.getAttribute('data-section');
+                    
+                    // Remove active classes
+                    navBtns.forEach(b => b.classList.remove('active'));
+                    sections.forEach(s => s.classList.remove('active'));
+                    
+                    // Add active classes
+                    this.classList.add('active');
+                    document.getElementById(targetSection).classList.add('active');
+                    
+                    // Hide all results
+                    document.querySelectorAll('.result-container').forEach(r => r.classList.remove('show'));
+                });
+            });
+
+            // Persona selector
+            const personaOptions = document.querySelectorAll('.persona-option');
+            personaOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    personaOptions.forEach(o => o.classList.remove('selected'));
+                    this.classList.add('selected');
+                    selectedPersona = this.getAttribute('data-persona');
+                    
+                    // Update QA input with selected persona
+                    const qaInput = document.getElementById('qaInput');
+                    try {
+                        const data = JSON.parse(qaInput.value);
+                        data.persona = selectedPersona;
+                        qaInput.value = JSON.stringify(data, null, 2);
+                    } catch (e) {
+                        // Ignore JSON parsing errors
+                    }
+                });
+            });
+        });
+
+        // API call helper
+        async function makeAPICall(endpoint, data) {
+            const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+            
+            return await response.json();
+        }
+
+        // Show loading spinner
+        function showLoading(sectionId) {
+            document.getElementById(sectionId + 'Loading').style.display = 'block';
+            document.getElementById(sectionId + 'Result').classList.remove('show');
+        }
+
+        // Hide loading spinner
+        function hideLoading(sectionId) {
+            document.getElementById(sectionId + 'Loading').style.display = 'none';
+        }
+
+        // Show result
+        function showResult(sectionId, content, isError = false) {
+            hideLoading(sectionId);
+            const resultContainer = document.getElementById(sectionId + 'Result');
+            const contentDiv = document.getElementById(sectionId + 'Content');
+            
+            if (isError) {
+                contentDiv.innerHTML = `<div class="error-message">${content}</div>`;
+            } else {
+                contentDiv.textContent = typeof content === 'object' ? JSON.stringify(content, null, 2) : content;
+            }
+            
+            resultContainer.classList.add('show');
+        }
+
+        // Test NLU Analysis
+        async function testNLU() {
+            try {
+                showLoading('nlu');
+                const inputValue = document.getElementById('nluInput').value;
+                const data = JSON.parse(inputValue);
+                const result = await makeAPICall('/nlu', data);
+                showResult('nlu', result);
+            } catch (error) {
+                showResult('nlu', `Error: ${error.message}`, true);
+            }
+        }
+
+        // Test Q&A Assistant
+        async function testQA() {
+            try {
+                showLoading('qa');
+                const inputValue = document.getElementById('qaInput').value;
+                const data = JSON.parse(inputValue);
+                const result = await makeAPICall('/generate', data);
+                
+                // Format the response nicely
+                const formattedResult = {
+                    response: result.response,
+                    persona: result.persona,
+                    sentiment: result.nlu_analysis?.sentiment || 'N/A'
+                };
+                
+                showResult('qa', formattedResult);
+            } catch (error) {
+                showResult('qa', `Error: ${error.message}`, true);
+            }
+        }
+
+        // Test Budget Summary
+        async function testBudget() {
+            try {
+                showLoading('budget');
+                const inputValue = document.getElementById('budgetInput').value;
+                const data = JSON.parse(inputValue);
+                const result = await makeAPICall('/budget-summary', data);
+                showResult('budget', result.summary || result);
+            } catch (error) {
+                showResult('budget', `Error: ${error.message}`, true);
+            }
+        }
+
+        // Test Spending Insights
+        async function testInsights() {
+            try {
+                showLoading('insights');
+                const inputValue = document.getElementById('insightsInput').value;
+                const data = JSON.parse(inputValue);
+                const result = await makeAPICall('/spending-insights', data);
+                showResult('insights', result.insights || result);
+            } catch (error) {
+                showResult('insights', `Error: ${error.message}`, true);
+            }
+        }
+
+        // Format JSON in textareas on focus
+        document.addEventListener('DOMContentLoaded', function() {
+            const textareas = document.querySelectorAll('.input-field');
+            textareas.forEach(textarea => {
+                textarea.addEventListener('blur', function() {
+                    try {
+                        const parsed = JSON.parse(this.value);
+                        this.value = JSON.stringify(parsed, null, 2);
+                    } catch (e) {
+                        // Ignore invalid JSON
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
