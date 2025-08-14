@@ -61,20 +61,53 @@ OPENAI_API_KEY=your_openai_api_key_here
 GOOGLE_APPLICATION_CREDENTIALS=path_to_your_google_cloud_key.json
 ```
 
-## Deployment on Render
+## Deployment Options
 
-1. Fork this repository to your GitHub account
-2. Connect your GitHub account to Render
-3. Create a new Web Service on Render:
+### Option 1: Deploy on Render (Recommended)
+
+1. **Fork this repository** to your GitHub account
+
+2. **Sign up for Render** at [render.com](https://render.com)
+
+3. **Connect your GitHub account** to Render
+
+4. **Create a new Web Service**:
+   - Click "New +" → "Web Service"
    - Choose "Build and deploy from a Git repository"
    - Select your forked repository
-   - Set the following:
-     - **Environment**: Python 3
+   - Configure the service:
+     - **Name**: `personal-finance-chatbot`
+     - **Environment**: `Python 3`
      - **Build Command**: `pip install -r requirements.txt`
-     - **Start Command**: `streamlit run streamlit_app.py --server.port=$PORT --server.address=0.0.0.0`
-4. Add environment variables in Render dashboard:
+     - **Start Command**: `streamlit run streamlit_app.py --server.port=$PORT --server.address=0.0.0.0 --server.headless=true`
+     - **Plan**: Free (or choose paid for better performance)
+
+5. **Add Environment Variables** in Render dashboard:
    - `OPENAI_API_KEY`: Your OpenAI API key
-   - `GOOGLE_APPLICATION_CREDENTIALS`: Base64 encoded content of your Google Cloud service account JSON
+   - `GOOGLE_APPLICATION_CREDENTIALS`: For local development, use the path to your JSON file. For Render, you'll need to base64 encode the JSON content and set it as the value.
+
+6. **Deploy**: Click "Create Web Service"
+
+### Option 2: Deploy with Docker
+
+```bash
+# Build the Docker image
+docker build -t personal-finance-chatbot .
+
+# Run the container
+docker run -p 8501:8501 \
+  -e OPENAI_API_KEY=your_key_here \
+  -e GOOGLE_APPLICATION_CREDENTIALS=/path/to/key.json \
+  personal-finance-chatbot
+```
+
+### Option 3: Deploy on Streamlit Cloud
+
+1. Fork this repository
+2. Go to [share.streamlit.io](https://share.streamlit.io)
+3. Connect your GitHub account
+4. Deploy your fork
+5. Add secrets in Streamlit Cloud dashboard
 
 ## API Keys Required
 
