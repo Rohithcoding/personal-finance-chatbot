@@ -15,8 +15,14 @@ A Streamlit-based personal finance chatbot that provides financial advice and an
 
 ```
 personal-finance-chatbot/
-├── streamlit_app.py          # Main Streamlit application
+├── streamlit_app.py          # Streamlit web application
+├── api_server.py            # Flask API server for frontend
 ├── requirements.txt          # Python dependencies
+├── frontend/                # Modern web frontend
+│   ├── index.html           # HTML structure
+│   ├── styles.css           # CSS styling
+│   ├── script.js            # JavaScript functionality
+│   └── README.md           # Frontend documentation
 ├── backend/                  # Backend modules
 │   ├── main.py              # Main chatbot logic
 │   ├── openai_api.py        # OpenAI API integration
@@ -48,9 +54,17 @@ cp .env.example .env
 ```
 
 4. Run the application:
+
+**Option A: Streamlit Interface (Recommended for development)**
 ```bash
 streamlit run streamlit_app.py
 ```
+
+**Option B: Modern Web Frontend (Recommended for production)**
+```bash
+python api_server.py
+```
+Visit: http://localhost:8000
 
 ### Environment Variables
 
